@@ -19,8 +19,12 @@ cask "exifcleaner" do
 
   app "ExifCleaner.app"
 
-  # No quarantine removal on purpose: the app is unsigned, so on first launch
-  # approve it once in System Settings -> Privacy & Security -> "Open Anyway".
+  # The app is unsigned, so Gatekeeper would block it on every install/upgrade.
+  # The download is checksum-verified against the official release above, so
+  # remove the quarantine flag from this one app only.
+  postflight_steps do
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/ExifCleaner.app"]
+  end
 
   zap trash: [
     "~/Library/Application Support/ExifCleaner",
